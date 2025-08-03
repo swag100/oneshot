@@ -11,7 +11,7 @@
 #define FRAME_RATE 60
 
 // You must include the command line parameters for your main function to be recognized by SDL
-int main(int argc, char** args) {
+int SDL_main(int argc, char** args) {
 
 	// Pointers to our window and surface
 	SDL_Window* window;
@@ -115,6 +115,10 @@ int main(int argc, char** args) {
 
 	SDL_FRect player = {100, 100, 64, 64};
 
+	//fps
+	Uint32 lastFpsCheckTime = SDL_GetTicks();
+	double fps = 0.0;
+
 	//DT
 	const int desiredFrameTime = 1000 / FRAME_RATE; // Desired frame time in milliseconds
 	int computeTime = 0;
@@ -178,7 +182,15 @@ int main(int argc, char** args) {
 
 
 		//display fps every second
-		testTextSurf = TTF_RenderText_Solid(font, std::to_string(1.f / deltaTime).c_str(), color);
+		Uint32 currentFpsCheckTime = SDL_GetTicks();
+		if (currentFpsCheckTime - lastFpsCheckTime >= 1000) { // Check if 1 second (1000 ms) has passed
+			fps = 1.f / deltaTime; // Calculate FPS
+			// Perform actions that should happen every second
+			// Example: printf("One second passed!\n");
+			lastFpsCheckTime = currentFpsCheckTime; // Reset the last check time
+		}
+
+		testTextSurf = TTF_RenderText_Solid(font, std::to_string(fps).c_str(), color);
 		if (!testTextSurf) {
 			std::cout << "Failed to render text: " << TTF_GetError() << std::endl;
 		}
