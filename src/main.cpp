@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <cstdlib>
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
@@ -7,6 +8,7 @@
 
 #define SCREEN_WIDTH 320
 #define SCREEN_HEIGHT 240
+#define FRAME_RATE 60
 
 // You must include the command line parameters for your main function to be recognized by SDL
 int main(int argc, char** args) {
@@ -58,18 +60,13 @@ int main(int argc, char** args) {
 	//test fonts
 
 	TTF_Font* font;
-	font = TTF_OpenFont("res/font/Zont.ttf", 24);
+	font = TTF_OpenFont("res/font/RpgSlant.ttf", 24); //16 is default
 	if (!font) {
 		std::cout << "Failed to load font: " << TTF_GetError() << std::endl;
 	}
-	SDL_Surface* testTextSurf;
 	SDL_Color color = { 255, 255, 255 };
-	testTextSurf = TTF_RenderText_Solid(font, "Hello World!", color);
-	if (!testTextSurf) {
-		std::cout << "Failed to render text: " << TTF_GetError() << std::endl;
-	}
+	SDL_Surface* testTextSurf;
 	SDL_Texture* text_texture;
-	text_texture = SDL_CreateTextureFromSurface(renderer, testTextSurf);
 
 	//player image
 
@@ -116,11 +113,19 @@ int main(int argc, char** args) {
 	SDL_Event event;
 	bool running = true;
 
-	SDL_Rect player = {100, 100, 64, 64};
-	player.x = 100; // Set the x position of the player
+	SDL_FRect player = {100, 100, 64, 64};
+
+	//DT
+	const int desiredFrameTime = 1000 / FRAME_RATE; // Desired frame time in milliseconds
+	int computeTime = 0;
+	float deltaTime = 0;
+	int startTime = 0;
 
 	// Main loop
 	while (running) {
+		//deltaTime += desiredFrameTime - deltaTime; // Reset deltaTime to the desired frame time
+		startTime = SDL_GetTicks(); // Get the current time in milliseconds
+
 		// Event loop
 		SDL_SetRenderTarget(renderer, screen);
 
@@ -140,36 +145,26 @@ int main(int argc, char** args) {
 				case SDL_KEYDOWN:
 					// test keycode
 					switch ( event.key.keysym.sym ) {
-						case SDLK_LEFT:
+						case SDLK_SPACE:
 							std::cout << "A key pressed" << std::endl;
-							playerRotation -= 10; // Move player up
-							Mix_PlayChannel(-1, blips[0], 0); // Play sound effect
+							playerRotation -= 5; // Move player up
+							Mix_PlayChannel(-1, blips[(rand() % 4)], 0); // Play sound effect
 							break;
-						case SDLK_RIGHT:
-							std::cout << "D key pressed" << std::endl;
-							Mix_PlayChannel(-1, blips[1], 0); // Play sound effect
-							playerRotation += 10; // Move player up
-							break;
-						case SDLK_UP:
-							std::cout << "W key pressed" << std::endl;
-							player.y -= 10; // Move player up
-							Mix_PlayChannel(-1, blips[2], 0); // Play sound effect
-							break;
-						case SDLK_DOWN:
-							std::cout << "S key pressed" << std::endl;
-							player.y += 10; // Move player up
-							Mix_PlayChannel(-1, blips[3], 0); // Play sound effect
-							break;
-						// etc
 					}
 
 					break;
 			}
 		}
 
+		const Uint8* keyboardState = SDL_GetKeyboardState(NULL);
+		// Check if a specific key is pressed
+		playerRotation += ((bool)keyboardState[SDL_SCANCODE_W] - (bool)keyboardState[SDL_SCANCODE_S]) * 600 * deltaTime; // Rotate player
+		player.x += ((bool)keyboardState[SDL_SCANCODE_D] - (bool)keyboardState[SDL_SCANCODE_A]) * 300 * deltaTime;
+
 		// Fill the window with a white rectangle
 		SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
-		SDL_RenderFillRect(renderer, &player); // Draw a filled rectangle
+		SDL_Rect playerRect = { (int)player.x, (int)player.y, (int)player.w, (int)player.h };
+		SDL_RenderFillRect(renderer, &playerRect); // Draw a filled rectangle
 
 		SDL_Rect newRect = { player.x - w + (player.w / 2), player.y - h + (player.h / 2), w * 2, h * 2 };
 
@@ -181,8 +176,17 @@ int main(int argc, char** args) {
 		//SDL_RenderCopy(renderer, texture, NULL, &newRect);
 		//SDL_FillRect(winSurface, &player, SDL_MapRGB(winSurface->format, 0, 255, 0));
 
+
+		//display fps every second
+		testTextSurf = TTF_RenderText_Solid(font, std::to_string(1.f / deltaTime).c_str(), color);
+		if (!testTextSurf) {
+			std::cout << "Failed to render text: " << TTF_GetError() << std::endl;
+		}
+		text_texture = SDL_CreateTextureFromSurface(renderer, testTextSurf);
 		SDL_Rect dest = { 0, 0, testTextSurf->w, testTextSurf->h };
 		SDL_RenderCopy(renderer, text_texture, NULL, &dest);
+		SDL_FreeSurface(testTextSurf);
+		SDL_DestroyTexture(text_texture);
 
 		//render target to window
 		SDL_SetRenderTarget(renderer, NULL);
@@ -194,15 +198,21 @@ int main(int argc, char** args) {
 		// Update window
 		SDL_RenderPresent(renderer);
 
-		// Wait before next frame
-		SDL_Delay(15);
+		//SDL_Delay(16);
+		computeTime = SDL_GetTicks() - startTime; // Calculate delta time in milliseconds
+		if (computeTime < desiredFrameTime)
+		{
+			//Wait remaining time
+			SDL_Delay(desiredFrameTime - computeTime);
+		}
+		// IMPORTANT: calculate deltaTime after the delay to account for the delay time.
+		deltaTime = (float)(SDL_GetTicks() - startTime) / 1000.f;
+		//std::cout << deltaTime << " ms" << std::endl;
 	}
 
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
 
-	SDL_FreeSurface(testTextSurf);
-	SDL_DestroyTexture(text_texture);
 	SDL_DestroyTexture(screen);
 	screen = NULL;
 	SDL_DestroyTexture(texture);
