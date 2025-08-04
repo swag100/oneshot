@@ -1,8 +1,12 @@
-#include "player.h"
 #include <SDL.h>
 #include <SDL_image.h>
+#include <SDL_mixer.h>
+#include <string>
 
-Player::Player(Game* game) : game(game) {
+#include "player.h"
+#include "game.h"
+
+Player::Player(Game* game) : Object(game) {
 	hitbox = { 100, 100, 64, 64 };
 
 	SDL_Surface* tempSurface = IMG_Load("res/images/tn_flag.png");
@@ -13,6 +17,12 @@ Player::Player(Game* game) : game(game) {
 
 	SDL_FreeSurface(tempSurface);
 	tempSurface = NULL;
+
+	for (int i = 0; i < 4; ++i) {
+		std::string filename = "res/sounds/blip" + std::to_string(i + 1) + ".wav";
+		blips[i] = Mix_LoadWAV(filename.c_str());
+		game->quitIfError(!blips[i]);
+	}
 }
 
 Player::~Player() {
@@ -23,7 +33,12 @@ Player::~Player() {
 }
 
 void Player::handleEvent(SDL_Event event) {
-
+	if (event.type == SDL_KEYDOWN) {
+		if (event.key.keysym.sym == SDLK_SPACE) {
+			direction -= 5;
+			Mix_PlayChannel(-1, blips[(rand() % 4)], 0);
+		}
+	}
 }
 
 void Player::update() {

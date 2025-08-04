@@ -16,6 +16,7 @@
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\object.h" />
     <ClInclude Include="src\player.h" />
     <ClInclude Include="src\constants.h" />
     <ClInclude Include="src\game.h" />

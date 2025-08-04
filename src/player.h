@@ -1,8 +1,7 @@
 #pragma once
-#include <SDL.h>
-#include "game.h"
+#include "object.h"
 
-class Player {
+class Player : Object {
 public:
 	Player(Game* game);
 	~Player();
@@ -10,14 +9,11 @@ public:
 	void handleEvent(SDL_Event event);
 	void update();
 	void draw();
-
 private:
-	Game* game;
-
 	SDL_Texture* texture;
 	SDL_FRect hitbox;
+	Mix_Chunk* blips[4];
 
 	int direction;
-
 };
 
