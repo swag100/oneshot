@@ -7,5 +7,9 @@ namespace constants {
 	constexpr int WINDOW_WIDTH = 640;
 	constexpr int WINDOW_HEIGHT = 480;
 
-	constexpr int WINDOW_FLAGS = SDL_WINDOW_RESIZABLE;
+	const char* WINDOW_TITLE = "deltarune2";
+	constexpr int WINDOW_FLAGS = SDL_WINDOW_RESIZABLE; // NULL for none
+
+	constexpr int FRAME_RATE = 60;
+	constexpr float FRAME_TIME = 1000 / FRAME_RATE; 
 }

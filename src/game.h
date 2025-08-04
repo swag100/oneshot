@@ -1,13 +1,14 @@
 #pragma once
 #include <SDL.h>
 
-class game
-{
-public:
-	game(const char* title, int width, int height);
-	~game();
+class Player;
 
-	int init();
+class Game {
+public:
+	Game();
+	~Game();
+
+	void quitIfError(bool cond);
 
 	void handleEvents();
 	void update();
@@ -15,10 +16,19 @@ public:
 
 	void run();
 
-private:
+//private:
 	bool done;
+
 	SDL_Window* window;
 	SDL_Renderer* renderer;
-	SDL_Texture* screen;
+	SDL_Texture* screen; // Contains the game at its native resolution
+
+	int computeTime = 0;
+	float deltaTime = 0;
+	int startTime = 0;
+
+	//testing -- replace with game object array.
+	Player* player;
+
 };
 
