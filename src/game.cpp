@@ -2,7 +2,6 @@
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 #include <SDL_mixer.h>
-#include <iostream>
 
 #include "game.h"
 #include "constants.h"
@@ -14,7 +13,7 @@
 //If the condition is met, quit the game and print the error.
 void Game::quitIfError(bool errorCond) {
 	if (errorCond) {
-		std::cout << SDL_GetError() << std::endl;
+		SDL_Log(SDL_GetError());
 		system("pause");
 		done = true;
 	}
@@ -55,7 +54,9 @@ Game::Game() {
 	);
 
 	//remove later
-	player = new Player{ this };
+	gameObjects.push_back(std::make_unique<Player>(this));
+	gameObjects.push_back(std::make_unique<Player>(this, 100, 100));
+	gameObjects.push_back(std::make_unique<Solid>(this, 100, 100, 80, 64));
 
 	run();
 }
@@ -72,10 +73,6 @@ Game::~Game() {
 	SDL_DestroyTexture(screen);
 	screen = NULL;
 
-	//possibly loop through all textures and clean em up
-	//loop through all objects and delete em
-	delete player;
-
 	// Quit SDL
 	IMG_Quit();
 	TTF_Quit();
@@ -89,13 +86,16 @@ void Game::handleEvents() {
 		if (e.type == SDL_QUIT) {
 			done = true;
 		}
-		player->handleEvent(e);
+		for (const auto& objPtr : gameObjects) {
+			objPtr->handleEvent(e);
+		}
 	}
 }
 
 void Game::update() {
-	player->update();
-	std::cout << deltaTime << std::endl;
+	for (const auto& objPtr : gameObjects) {
+		objPtr->update();
+	}
 }
 
 void Game::draw() {
@@ -105,8 +105,9 @@ void Game::draw() {
 	SDL_RenderClear(renderer);
 
 	// Okay let's actually draw now
-	player->draw();
-	
+	for (const auto& objPtr : gameObjects) {
+		objPtr->draw();
+	}
 
 	// Set render target to window and present our awesome drawing
 	SDL_SetRenderTarget(renderer, NULL);

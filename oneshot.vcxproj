@@ -14,8 +14,10 @@
     <ClCompile Include="src\player.cpp" />
     <ClCompile Include="src\game.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\solid.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\solid.h" />
     <ClInclude Include="src\object.h" />
     <ClInclude Include="src\player.h" />
     <ClInclude Include="src\constants.h" />

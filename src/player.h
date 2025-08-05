@@ -1,17 +1,20 @@
 #pragma once
-#include "object.h"
 
-class Player : Object {
+#include "solid.h"
+
+class Player : public Solid {
 public:
 	Player(Game* game);
+	Player(Game* game, int x, int y);
 	~Player();
+
+	void init();
 
 	void handleEvent(SDL_Event event);
 	void update();
 	void draw();
 private:
 	SDL_Texture* texture;
-	SDL_FRect hitbox;
 	Mix_Chunk* blips[4];
 
 	int direction;

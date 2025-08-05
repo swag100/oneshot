@@ -6,8 +6,20 @@
 #include "player.h"
 #include "game.h"
 
-Player::Player(Game* game) : Object(game) {
-	hitbox = { 100, 100, 64, 64 };
+Player::Player(Game* game) : Solid(game, 0, 0, 16, 16) {
+	init();
+}
+Player::Player(Game* game, int x, int y) : Solid(game, x, y, 16, 16) {
+	init();
+}
+Player::~Player() {
+	if (texture != NULL) {
+		SDL_DestroyTexture(texture);
+		texture = NULL;
+	}
+}
+
+void Player::init() {
 
 	SDL_Surface* tempSurface = IMG_Load("res/images/tn_flag.png");
 
@@ -25,13 +37,6 @@ Player::Player(Game* game) : Object(game) {
 	}
 }
 
-Player::~Player() {
-	if (texture != NULL) {
-		SDL_DestroyTexture(texture);
-		texture = NULL;
-	}
-}
-
 void Player::handleEvent(SDL_Event event) {
 	if (event.type == SDL_KEYDOWN) {
 		if (event.key.keysym.sym == SDLK_SPACE) {
@@ -44,29 +49,36 @@ void Player::handleEvent(SDL_Event event) {
 void Player::update() {
 	//game->deltaTime
 	const Uint8* keyboardState = SDL_GetKeyboardState(NULL);
-	hitbox.y += (
-		(bool)keyboardState[SDL_SCANCODE_S] - 
+	yVelocity = (
+		(bool)keyboardState[SDL_SCANCODE_S] -
 		(bool)keyboardState[SDL_SCANCODE_W]
-	) * 300 * game->deltaTime;
-	hitbox.x += (
-		(bool)keyboardState[SDL_SCANCODE_D] - 
+		) * 300;
+	xVelocity = (
+		(bool)keyboardState[SDL_SCANCODE_D] -
 		(bool)keyboardState[SDL_SCANCODE_A]
-	) * 300 * game->deltaTime;
+		) * 300;
 	direction += (
 		(bool)keyboardState[SDL_SCANCODE_E] -
 		(bool)keyboardState[SDL_SCANCODE_Q]
-		) * 600 * game->deltaTime;
+	) * 600 * game->deltaTime;
+
+	//collide
+	Solid::update();
+
 }
 
 void Player::draw() {
-	SDL_SetRenderDrawColor(game->renderer, 0, 0, 255, 255);
-
-	SDL_Rect hitboxRectInt = { (int)hitbox.x, (int)hitbox.y, (int)hitbox.w, (int)hitbox.h };
-	SDL_RenderFillRect(game->renderer, &hitboxRectInt); // Draw a filled rectangle
-
 	SDL_Point size;
 	SDL_QueryTexture(texture, NULL, NULL, &size.x, &size.y);
-	SDL_Rect newRect = { hitbox.x - size.x + (hitbox.w / 2), hitbox.y - size.y + (hitbox.h / 2), size.x * 2, size.y * 2 };
+	SDL_Rect newRect = { 
+		hitbox.x - size.x + (hitbox.w / 2), 
+		hitbox.y - size.y + (hitbox.h / 2), 
+		size.x * 2, 
+		size.y * 2 
+	};
 
 	SDL_RenderCopyEx(game->renderer, texture, NULL, &newRect, (direction % 360), &size, SDL_FLIP_HORIZONTAL);
+
+	//call super
+	Solid::draw();
 }

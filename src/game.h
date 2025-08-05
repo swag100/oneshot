@@ -1,7 +1,9 @@
 #pragma once
-#include <SDL.h>
 
-class Player;
+#include <SDL.h>
+#include <memory>
+#include <vector>
+class Object;
 
 class Game {
 public:
@@ -27,8 +29,7 @@ public:
 	float deltaTime = 0;
 	int startTime = 0;
 
-	//testing -- replace with game object array.
-	Player* player;
+	std::vector<std::unique_ptr<Object>> gameObjects;
 
 };
 
