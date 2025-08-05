@@ -54,9 +54,9 @@ Game::Game() {
 	);
 
 	//remove later
+	gameObjects.push_back(std::make_unique<Solid>(this, 8, 200, 200, 32));
 	gameObjects.push_back(std::make_unique<Player>(this));
 	gameObjects.push_back(std::make_unique<Player>(this, 100, 100));
-	gameObjects.push_back(std::make_unique<Solid>(this, 100, 100, 80, 64));
 
 	run();
 }

@@ -42,6 +42,8 @@ void Player::handleEvent(SDL_Event event) {
 		if (event.key.keysym.sym == SDLK_SPACE) {
 			direction -= 5;
 			Mix_PlayChannel(-1, blips[(rand() % 4)], 0);
+
+			yVelocity -= 200;
 		}
 	}
 }
@@ -49,18 +51,19 @@ void Player::handleEvent(SDL_Event event) {
 void Player::update() {
 	//game->deltaTime
 	const Uint8* keyboardState = SDL_GetKeyboardState(NULL);
-	yVelocity = (
-		(bool)keyboardState[SDL_SCANCODE_S] -
-		(bool)keyboardState[SDL_SCANCODE_W]
-		) * 300;
 	xVelocity = (
 		(bool)keyboardState[SDL_SCANCODE_D] -
 		(bool)keyboardState[SDL_SCANCODE_A]
-		) * 300;
+	) * 300;
 	direction += (
 		(bool)keyboardState[SDL_SCANCODE_E] -
 		(bool)keyboardState[SDL_SCANCODE_Q]
 	) * 600 * game->deltaTime;
+
+	//add gravity
+	yVelocity += 400 * game->deltaTime;
+
+	//fix deltatime so resizing window doesn't make you fall through the ground
 
 	//collide
 	Solid::update();

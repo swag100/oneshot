@@ -38,6 +38,7 @@ void Solid::pushX() {
 			else {
 				hitbox.x = collision.x + collision.w;
 			}
+			xVelocity = 0;
 		}
 	}
 }
@@ -52,6 +53,7 @@ void Solid::pushY() {
 			else {
 				hitbox.y = collision.y + collision.h;
 			}
+			yVelocity = 0;
 		}
 	}
 }
