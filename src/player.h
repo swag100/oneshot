@@ -5,10 +5,13 @@
 class Player : public Solid {
 public:
 	Player(Game* game);
-	Player(Game* game, int x, int y);
+	Player(Game* game, SDL_Point spawnPosition);
 	~Player();
 
 	void init();
+	void applyGravity(); // override solid
+
+	void landed();
 
 	void handleEvent(SDL_Event event);
 	void update();
@@ -18,5 +21,11 @@ private:
 	Mix_Chunk* blips[4];
 
 	int direction;
+
+	int maxJumpHeight = 180;
+	int minJumpHeight = 320;
+	int runSpeed = 100;
+
+	bool hasJumped = false;
 };
 

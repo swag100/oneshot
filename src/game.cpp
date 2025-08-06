@@ -54,9 +54,23 @@ Game::Game() {
 	);
 
 	//remove later
-	gameObjects.push_back(std::make_unique<Solid>(this, 8, 200, 200, 32));
-	gameObjects.push_back(std::make_unique<Player>(this));
-	gameObjects.push_back(std::make_unique<Player>(this, 100, 100));
+	std::unique_ptr<Solid> ground = std::make_unique<Solid>(this);
+	ground->hitbox = { 8, 200, 200, 32 };
+	ground->anchored = true;
+	gameObjects.push_back(std::move(ground));
+
+	std::unique_ptr<Solid> ground2 = std::make_unique<Solid>(this);
+	ground2->hitbox = { 200, 160, 90, 32 };
+	ground2->anchored = true;
+	gameObjects.push_back(std::move(ground2));
+
+	std::unique_ptr<Solid> ground3 = std::make_unique<Solid>(this);
+	ground3->hitbox = { -10, 80, 16, 80 };
+	ground3->anchored = true;
+	gameObjects.push_back(std::move(ground3));
+
+	SDL_Point playerPosition = { 100, 100 };
+	gameObjects.push_back(std::make_unique<Player>(this, playerPosition));
 
 	run();
 }
@@ -128,6 +142,10 @@ void Game::run() {
 		if (computeTime < constants::FRAME_TIME) {
 			SDL_Delay(constants::FRAME_TIME - computeTime);
 		}
+
 		deltaTime = (float)(SDL_GetTicks() - startTime) / 1000.f;
+		if (deltaTime >= constants::MAX_FRAME_TIME) {
+			deltaTime = constants::MAX_FRAME_TIME;
+		}
 	}
 }

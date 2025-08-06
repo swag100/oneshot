@@ -5,11 +5,13 @@
 
 #include "player.h"
 #include "game.h"
+#include "constants.h"
 
 Player::Player(Game* game) : Solid(game, 0, 0, 16, 16) {
 	init();
 }
-Player::Player(Game* game, int x, int y) : Solid(game, x, y, 16, 16) {
+Player::Player(Game* game, SDL_Point spawnPosition) 
+: Solid(game, spawnPosition.x, spawnPosition.y, 16, 16) {
 	init();
 }
 Player::~Player() {
@@ -20,7 +22,6 @@ Player::~Player() {
 }
 
 void Player::init() {
-
 	SDL_Surface* tempSurface = IMG_Load("res/images/tn_flag.png");
 
 	texture = SDL_CreateTextureFromSurface(game->renderer, tempSurface);
@@ -37,13 +38,37 @@ void Player::init() {
 	}
 }
 
+void Player::applyGravity() {
+	int gravity = constants::FALL_GRAVITY;
+
+	if (yVelocity < 0 && hasJumped) {
+		gravity = constants::GRAVITY;
+	}
+
+	yVelocity += gravity * game->deltaTime;
+}
+
+void Player::landed() {
+	hasJumped = false;
+}
+
 void Player::handleEvent(SDL_Event event) {
 	if (event.type == SDL_KEYDOWN) {
-		if (event.key.keysym.sym == SDLK_SPACE) {
+		if (platform != NULL && event.key.keysym.sym == SDLK_SPACE && event.key.repeat == 0) {
+			hasJumped = true; 
+
 			direction -= 5;
 			Mix_PlayChannel(-1, blips[(rand() % 4)], 0);
 
-			yVelocity -= 200;
+			yVelocity -= maxJumpHeight;
+		}
+	}
+	if (event.type == SDL_KEYUP) {
+		if (event.key.keysym.sym == SDLK_SPACE) {
+			if (yVelocity < -minJumpHeight && !hasJumped) {
+				yVelocity = -minJumpHeight;
+			}
+			hasJumped = false;
 		}
 	}
 }
@@ -54,20 +79,16 @@ void Player::update() {
 	xVelocity = (
 		(bool)keyboardState[SDL_SCANCODE_D] -
 		(bool)keyboardState[SDL_SCANCODE_A]
-	) * 300;
+	) * runSpeed;
 	direction += (
 		(bool)keyboardState[SDL_SCANCODE_E] -
 		(bool)keyboardState[SDL_SCANCODE_Q]
 	) * 600 * game->deltaTime;
 
-	//add gravity
-	yVelocity += 400 * game->deltaTime;
-
 	//fix deltatime so resizing window doesn't make you fall through the ground
 
 	//collide
 	Solid::update();
-
 }
 
 void Player::draw() {

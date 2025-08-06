@@ -18,7 +18,6 @@ public:
 
 	void run();
 
-//private:
 	bool done;
 
 	SDL_Window* window;
