@@ -24,7 +24,7 @@ private:
 
 	int maxJumpHeight = 180;
 	int minJumpHeight = 320;
-	int runSpeed = 100;
+	int runSpeed = 16;
 
 	bool hasJumped = false;
 };

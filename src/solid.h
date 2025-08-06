@@ -11,7 +11,7 @@ public:
 	Solid(Game* game, int x, int y, int w, int h);
 
 	std::vector<Solid*> getCollisions();
-	bool checkForOverlap(SDL_FRect a, SDL_FRect b);
+	bool checkForOverlap(SDL_FRect& a, SDL_FRect& b);
 	void pushX();
 	void pushY();
 	virtual void applyGravity();

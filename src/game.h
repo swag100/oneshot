@@ -18,17 +18,16 @@ public:
 
 	void run();
 
-	bool done;
-
 	SDL_Window* window;
 	SDL_Renderer* renderer;
 	SDL_Texture* screen; // Contains the game at its native resolution
+
+	std::vector<std::unique_ptr<Object>> gameObjects;
 
 	int computeTime = 0;
 	float deltaTime = 0;
 	int startTime = 0;
 
-	std::vector<std::unique_ptr<Object>> gameObjects;
+	bool done;
 
 };
-

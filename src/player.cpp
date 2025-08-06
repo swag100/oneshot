@@ -10,14 +10,13 @@
 Player::Player(Game* game) : Solid(game, 0, 0, 16, 16) {
 	init();
 }
-Player::Player(Game* game, SDL_Point spawnPosition) 
-: Solid(game, spawnPosition.x, spawnPosition.y, 16, 16) {
+Player::Player(Game* game, SDL_Point spawnPosition) : Solid(game, spawnPosition.x, spawnPosition.y, 16, 16) {
 	init();
 }
 Player::~Player() {
-	if (texture != NULL) {
+	if (texture != nullptr) {
 		SDL_DestroyTexture(texture);
-		texture = NULL;
+		texture = nullptr;
 	}
 }
 
@@ -76,16 +75,15 @@ void Player::handleEvent(SDL_Event event) {
 void Player::update() {
 	//game->deltaTime
 	const Uint8* keyboardState = SDL_GetKeyboardState(NULL);
-	xVelocity = (
+	xVelocity += (
 		(bool)keyboardState[SDL_SCANCODE_D] -
 		(bool)keyboardState[SDL_SCANCODE_A]
 	) * runSpeed;
+	xVelocity *= 0.85;
 	direction += (
 		(bool)keyboardState[SDL_SCANCODE_E] -
 		(bool)keyboardState[SDL_SCANCODE_Q]
 	) * 600 * game->deltaTime;
-
-	//fix deltatime so resizing window doesn't make you fall through the ground
 
 	//collide
 	Solid::update();

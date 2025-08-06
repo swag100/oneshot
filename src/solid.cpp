@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cmath>
 
 #include "solid.h"
 #include "game.h"
@@ -23,7 +24,7 @@ std::vector<Solid*> Solid::getCollisions() {
 	}
 	return collisions;
 }
-bool Solid::checkForOverlap(SDL_FRect a, SDL_FRect b) {
+bool Solid::checkForOverlap(SDL_FRect& a, SDL_FRect& b) {
 	return (a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y);
 }
 void Solid::pushX() {
@@ -31,15 +32,13 @@ void Solid::pushX() {
 
 	for (Solid* collision : collisions) {
 		SDL_FRect theirBox = collision->hitbox;
-		if (xVelocity != 0) {
-			if (xVelocity > 0) {
-				hitbox.x = theirBox.x - hitbox.w;
-			}
-			else {
-				hitbox.x = theirBox.x + theirBox.w;
-			}
-			xVelocity = 0;
+		if (theirBox.x - hitbox.x > 0) {
+			hitbox.x = theirBox.x - hitbox.w;
 		}
+		else {
+			hitbox.x = theirBox.x + theirBox.w;
+		}
+		xVelocity = 0;
 	}
 }
 void Solid::pushY() {
@@ -48,17 +47,15 @@ void Solid::pushY() {
 	platform = NULL;
 	for (Solid* collision : collisions) {
 		SDL_FRect theirBox = collision->hitbox;
-		if (yVelocity != 0) {
-			if (yVelocity > 0) {
-				hitbox.y = theirBox.y - hitbox.h;
-				platform = collision;
-				landed();
-			}
-			else {
-				hitbox.y = theirBox.y + theirBox.h;
-			}
-			yVelocity = 0;
+		if (theirBox.y - hitbox.y > 0) {
+			hitbox.y = theirBox.y - hitbox.h;
+			platform = collision;
+			landed();
 		}
+		else {
+			hitbox.y = theirBox.y + theirBox.h;
+		}
+		yVelocity = 0;
 	}
 }
 void Solid::applyGravity() {
@@ -78,10 +75,11 @@ void Solid::update() {
 	}
 	
 	//apply velocity!
-	hitbox.x += (xVelocity) * game->deltaTime;
-	if (platform != NULL) {
-		hitbox.x += platform->xVelocity * game->deltaTime;
+	float totalXVelocity = xVelocity;
+	if (platform != NULL && platform->xVelocity != 0) {
+		totalXVelocity += platform->xVelocity;
 	}
+	hitbox.x += (totalXVelocity) * game->deltaTime;
 	pushX();
 
 	hitbox.y += (yVelocity) * game->deltaTime;
@@ -97,8 +95,8 @@ void Solid::draw() {
 	SDL_SetRenderDrawColor(game->renderer, 0, 0, 255, 255);
 
 	SDL_Rect hitboxRectInt = { 
-		(int)hitbox.x, (int)hitbox.y, 
-		(int)hitbox.w, (int)hitbox.h 
+		std::floor(hitbox.x), std::floor(hitbox.y),
+		std::floor(hitbox.w), std::floor(hitbox.h)
 	};
 	SDL_RenderFillRect(game->renderer, &hitboxRectInt); // Draw a filled rectangle
 }

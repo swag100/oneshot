@@ -6,6 +6,7 @@
 #include "game.h"
 #include "constants.h"
 #include "player.h"
+#include "lil.h"
 
 //maybe move to util namespace?
 //you'd have to add game as a param, but im too lazy to figure that out.
@@ -54,6 +55,10 @@ Game::Game() {
 	);
 
 	//remove later
+
+	SDL_Point lilPosition = { 100, 100 };
+	gameObjects.push_back(std::make_unique<Lil>(this, lilPosition));
+
 	std::unique_ptr<Solid> ground = std::make_unique<Solid>(this);
 	ground->hitbox = { 8, 200, 200, 32 };
 	ground->anchored = true;
@@ -78,14 +83,16 @@ Game::Game() {
 Game::~Game() {
 	//CLEANUP -- quit sdl, destroy window, renderer, textures, etc.
 
+	gameObjects.clear();
+
+	SDL_DestroyTexture(screen);
+	screen = NULL;
+
 	SDL_DestroyRenderer(renderer);
 	renderer = NULL;
 
 	SDL_DestroyWindow(window);
 	window = NULL;
-
-	SDL_DestroyTexture(screen);
-	screen = NULL;
 
 	// Quit SDL
 	IMG_Quit();
@@ -144,7 +151,7 @@ void Game::run() {
 		}
 
 		deltaTime = (float)(SDL_GetTicks() - startTime) / 1000.f;
-		if (deltaTime >= constants::MAX_FRAME_TIME) {
+		if (constants::MAX_FRAME_TIME > constants::FRAME_TIME && deltaTime >= constants::MAX_FRAME_TIME) {
 			deltaTime = constants::MAX_FRAME_TIME;
 		}
 	}
