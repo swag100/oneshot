@@ -150,7 +150,10 @@ void Game::run() {
 			SDL_Delay(constants::FRAME_TIME - computeTime);
 		}
 
+
 		deltaTime = (float)(SDL_GetTicks() - startTime) / 1000.f;
+
+		// Cap deltatime
 		if (constants::MAX_FRAME_TIME > constants::FRAME_TIME && deltaTime >= constants::MAX_FRAME_TIME) {
 			deltaTime = constants::MAX_FRAME_TIME;
 		}

@@ -62,8 +62,8 @@ void Solid::pushY() {
 		yVelocity = 0;
 	}
 }
-void Solid::applyGravity() {
-	yVelocity += (yVelocity > 0 ? constants::FALL_GRAVITY : constants::GRAVITY) * game->deltaTime;
+int Solid::getGravity() {
+	return (yVelocity > 0 ? constants::FALL_GRAVITY : constants::GRAVITY);
 }
 void Solid::landed(Solid* collision) {
 	platform = collision;
@@ -72,22 +72,23 @@ void Solid::landed(Solid* collision) {
 void Solid::update() {
 	//add gravity
 	if (!anchored) {
-		applyGravity();
+		yVelocity += getGravity() * game->deltaTime;
+		if (yVelocity > maxVelocity) {
+			yVelocity = maxVelocity;
+		}
 	}
 
-	if (yVelocity > maxVelocity) {
-		yVelocity = maxVelocity;
-	}
 	
 	//apply velocity!
-	float totalXVelocity = xVelocity;
+	float totalVelocity = xVelocity;
 	if (onGround()) {
-		totalXVelocity += platform->xVelocity;
+		totalVelocity += platform->xVelocity;
 	}
-	hitbox.x += (totalXVelocity)*game->deltaTime;
+	hitbox.x += (totalVelocity)*game->deltaTime;
 	pushX();
 
-	hitbox.y += (yVelocity) * game->deltaTime;
+	//make sure we snap to the surface of the platform.
+	hitbox.y += (yVelocity)*game->deltaTime;
 	pushY();
 
 	//REMOVE LATER

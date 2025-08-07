@@ -11,7 +11,7 @@ public:
 	void init();
 	void jump();
 
-	void applyGravity(); // override solid
+	int getGravity(); // override solid
 	void landed();
 
 	void handleEvent(SDL_Event event);

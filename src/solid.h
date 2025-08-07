@@ -15,7 +15,7 @@ public:
 	bool onGround();
 	void pushX();
 	void pushY();
-	virtual void applyGravity();
+	virtual int getGravity();
 
 	virtual void landed(Solid* collision);
 

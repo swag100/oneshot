@@ -13,6 +13,11 @@ public:
 	void handleEvent(SDL_Event event) {}
 	void update() {
 		xVelocity = std::sin((SDL_GetTicks() / 1000) * 20) * 64;
+
+		if ((SDL_GetTicks() / 1000) % 5 < 0.1) {
+			yVelocity -= 10;
+		}
+
 		//collide
 		Solid::update();
 	}

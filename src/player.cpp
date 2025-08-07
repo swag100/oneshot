@@ -45,12 +45,14 @@ void Player::jump() {
 	yVelocity -= maxJumpHeight;
 }
 
-void Player::applyGravity() {
+int Player::getGravity() {
 	int gravity = constants::FALL_GRAVITY;
 
 	if (yVelocity < 0 && hasJumped) {
 		gravity = constants::GRAVITY;
 	}
+
+	return gravity;
 
 	yVelocity += gravity * game->deltaTime;
 }
