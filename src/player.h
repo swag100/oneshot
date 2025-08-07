@@ -27,6 +27,8 @@ private:
 	int minJumpHeight = 320;
 	int runSpeed = 16;
 
+	float xInertia = 0; // applied with no damping
+
 	bool hasJumped = false;
 };
 
