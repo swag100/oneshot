@@ -44,7 +44,7 @@
     <ClInclude Include="src\solid.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\lil.h">
+    <ClInclude Include="src\enemy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

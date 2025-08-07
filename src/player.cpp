@@ -36,6 +36,14 @@ void Player::init() {
 		game->quitIfError(!blips[i]);
 	}
 }
+void Player::jump() {
+	hasJumped = true;
+
+	direction -= 5;
+	Mix_PlayChannel(-1, blips[(rand() % 4)], 0);
+
+	yVelocity -= maxJumpHeight;
+}
 
 void Player::applyGravity() {
 	int gravity = constants::FALL_GRAVITY;
@@ -53,13 +61,10 @@ void Player::landed() {
 
 void Player::handleEvent(SDL_Event event) {
 	if (event.type == SDL_KEYDOWN) {
-		if (platform != NULL && event.key.keysym.sym == SDLK_SPACE && event.key.repeat == 0) {
-			hasJumped = true; 
-
-			direction -= 5;
-			Mix_PlayChannel(-1, blips[(rand() % 4)], 0);
-
-			yVelocity -= maxJumpHeight;
+		if (event.key.keysym.sym == SDLK_SPACE && event.key.repeat == 0) {
+			if (onGround()) {
+				jump();
+			}
 		}
 	}
 	if (event.type == SDL_KEYUP) {

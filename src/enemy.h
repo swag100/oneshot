@@ -3,12 +3,12 @@
 #include "solid.h"
 #include <cmath>
 
-//COMPLETELY INLINE BECAUSE IT WAS MADE QUICKLY. RENAME THIS FILE TO ENEMY AND CREATE ENEMY.CPP FOR IMPLEMENTATIONS.
+// CREATE ENEMY.CPP FOR IMPLEMENTATIONS.
 
-class Lil : public Solid {
+class Enemy : public Solid {
 public:
-	Lil(Game* game, SDL_Point spawnPosition) : Solid(game, spawnPosition.x, spawnPosition.y, 16, 16) {}
-	~Lil() {}
+	Enemy(Game* game, SDL_Point spawnPosition) : Solid(game, spawnPosition.x, spawnPosition.y, 16, 16) {}
+	~Enemy() {}
 
 	void handleEvent(SDL_Event event) {}
 	void update() {

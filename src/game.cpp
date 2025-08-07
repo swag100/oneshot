@@ -6,7 +6,7 @@
 #include "game.h"
 #include "constants.h"
 #include "player.h"
-#include "lil.h"
+#include "enemy.h"
 
 //maybe move to util namespace?
 //you'd have to add game as a param, but im too lazy to figure that out.
@@ -57,7 +57,7 @@ Game::Game() {
 	//remove later
 
 	SDL_Point lilPosition = { 100, 100 };
-	gameObjects.push_back(std::make_unique<Lil>(this, lilPosition));
+	gameObjects.push_back(std::make_unique<Enemy>(this, lilPosition));
 
 	std::unique_ptr<Solid> ground = std::make_unique<Solid>(this);
 	ground->hitbox = { 8, 200, 200, 32 };

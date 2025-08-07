@@ -9,8 +9,9 @@ public:
 	~Player();
 
 	void init();
-	void applyGravity(); // override solid
+	void jump();
 
+	void applyGravity(); // override solid
 	void landed();
 
 	void handleEvent(SDL_Event event);

@@ -12,13 +12,13 @@ public:
 
 	std::vector<Solid*> getCollisions();
 	bool checkForOverlap(SDL_FRect& a, SDL_FRect& b);
+	bool onGround();
 	void pushX();
 	void pushY();
 	virtual void applyGravity();
 
-	virtual void landed() {}
+	virtual void landed(Solid* collision);
 
-	void handleEvent(SDL_Event event);
 	void update();
 	void draw();
 
@@ -32,6 +32,7 @@ public:
 
 	int maxVelocity = 800;
 
-	Solid* platform; // pointer to what we're standing on
+	Solid* platform = nullptr; // pointer to what we're standing on
+	bool againstWall = false;
 };
 
