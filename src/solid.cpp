@@ -33,7 +33,6 @@ bool Solid::onGround() {
 void Solid::pushX() {
 	std::vector<Solid*> collisions = getCollisions();
 
-	againstWall = false;
 	for (Solid* collision : collisions) {
 		SDL_FRect theirBox = collision->hitbox;
 		if (theirBox.x - hitbox.x > 0) {
@@ -43,7 +42,6 @@ void Solid::pushX() {
 			hitbox.x = theirBox.x + theirBox.w;
 		}
 		xVelocity = 0;
-		againstWall = true;
 	}
 }
 void Solid::pushY() {
@@ -80,14 +78,9 @@ void Solid::update() {
 
 	
 	//apply velocity!
-	float totalVelocity = xVelocity;
-	if (onGround()) {
-		totalVelocity += platform->xVelocity;
-	}
-	hitbox.x += (totalVelocity)*game->deltaTime;
+	hitbox.x += (xVelocity)*game->deltaTime;
 	pushX();
 
-	//make sure we snap to the surface of the platform.
 	hitbox.y += (yVelocity)*game->deltaTime;
 	pushY();
 
@@ -106,11 +99,6 @@ void Solid::draw() {
 		std::floor(hitbox.w),
 		std::floor(hitbox.h)
 	};
-
-	// snap x to the platform's x so it looks exact.
-	if (onGround() && !againstWall && platform->xVelocity != 0) {
-		intHitbox.x = std::floor(platform->hitbox.x) + std::floor(hitbox.x - platform->hitbox.x);
-	}
 
 	SDL_RenderFillRect(game->renderer, &intHitbox); // Draw a filled rectangle
 }

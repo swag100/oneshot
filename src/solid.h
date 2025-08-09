@@ -32,7 +32,6 @@ public:
 
 	int maxVelocity = 800;
 
-	Solid* platform = nullptr; // pointer to what we're standing on
-	bool againstWall = false;
+	Solid* platform = NULL; // pointer to what we're standing on
 };
 

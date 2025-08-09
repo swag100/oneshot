@@ -91,13 +91,6 @@ void Player::update() {
 		(bool)keyboardState[SDL_SCANCODE_E] -
 		(bool)keyboardState[SDL_SCANCODE_Q]
 	) * 600 * game->deltaTime;
-
-	if (onGround()) {
-		xInertia = platform->xVelocity;
-	}
-	else {
-		hitbox.x += xInertia * game->deltaTime;
-	}
 	
 	//collide
 	Solid::update();
